@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Chrome as Home, Target, BarChart3, Settings } from 'lucide-react-native';
+import { Chrome as Home, Target, ChartBar as BarChart3, Settings } from 'lucide-react-native';
 import { BlurView } from 'expo-blur';
 import { getColors } from '../../constants/colors';
 import { useTheme } from '../../contexts/ThemeContext';
