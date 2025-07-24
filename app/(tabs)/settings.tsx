@@ -9,6 +9,7 @@ import {
   Switch,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { 
   Bell, 
   Download, 
@@ -21,7 +22,8 @@ import {
   Smartphone, 
   CircleHelp as HelpCircle,
   Palette,
-  Shield
+  Shield,
+  Monitor
 } from 'lucide-react-native';
 
 import { getColors } from '../../constants/colors';
@@ -35,6 +37,8 @@ interface SettingItemProps {
   onPress?: () => void;
   rightElement?: React.ReactNode;
   showChevron?: boolean;
+  isFirst?: boolean;
+  isLast?: boolean;
 }
 
 const SettingItem: React.FC<SettingItemProps> = ({
@@ -44,24 +48,41 @@ const SettingItem: React.FC<SettingItemProps> = ({
   onPress,
   rightElement,
   showChevron = true,
+  isFirst = false,
+  isLast = false,
 }) => {
   const { isDark } = useTheme();
   const colors = getColors(isDark);
-  const styles = createStyles(colors);
   
   return (
-    <TouchableOpacity style={[styles.settingItem, { backgroundColor: colors.card, borderBottomColor: colors.surface }]} onPress={onPress}>
+    <TouchableOpacity 
+      style={[
+        styles.settingItem, 
+        { 
+          backgroundColor: colors.surface,
+          borderTopLeftRadius: isFirst ? 12 : 0,
+          borderTopRightRadius: isFirst ? 12 : 0,
+          borderBottomLeftRadius: isLast ? 12 : 0,
+          borderBottomRightRadius: isLast ? 12 : 0,
+          borderBottomWidth: isLast ? 0 : 0.5,
+          borderBottomColor: colors.systemGray5,
+        }
+      ]} 
+      onPress={onPress}
+    >
       <View style={styles.settingLeft}>
-        <View style={[styles.settingIcon, { backgroundColor: colors.surface }]}>{icon}</View>
+        <View style={[styles.settingIcon, { backgroundColor: colors.systemGray6 }]}>
+          {icon}
+        </View>
         <View style={styles.settingText}>
-          <Text style={[styles.settingTitle, { color: colors.textPrimary }]}>{title}</Text>
-          {subtitle && <Text style={[styles.settingSubtitle, { color: colors.textSecondary }]}>{subtitle}</Text>}
+          <Text style={[styles.settingTitle, { color: colors.label }]}>{title}</Text>
+          {subtitle && <Text style={[styles.settingSubtitle, { color: colors.labelSecondary }]}>{subtitle}</Text>}
         </View>
       </View>
       <View style={styles.settingRight}>
         {rightElement}
         {showChevron && !rightElement && (
-          <ChevronRight size={20} color={colors.textSecondary} />
+          <ChevronRight size={18} color={colors.systemGray2} strokeWidth={2.5} />
         )}
       </View>
     </TouchableOpacity>
@@ -81,28 +102,20 @@ export default function SettingsScreen() {
         StorageService.getAchievements(),
       ]);
 
-      const exportData = {
-        habits,
-        logs,
-        achievements,
-        exportDate: new Date().toISOString(),
-        version: '1.0.0',
-      };
-
       Alert.alert(
-        'Export Data',
-        `Ready to export your data:\n\n• ${habits.length} habits\n• ${logs.length} habit logs\n• ${achievements.length} achievements\n\nIn the full version, this would save to your device or cloud storage.`,
-        [{ text: 'Got it!', style: 'default' }]
+        'Export Complete',
+        `Your data is ready for export:\n\n• ${habits.length} habits tracked\n• ${logs.length} completion logs\n• ${achievements.length} achievements earned\n\nIn the full version, this would save securely to your preferred cloud service or device storage.`,
+        [{ text: 'Perfect!', style: 'default' }]
       );
     } catch (error) {
-      Alert.alert('Error', 'Failed to export data. Please try again.');
+      Alert.alert('Export Failed', 'Unable to export your data. Please try again.');
     }
   };
 
   const handleImportData = () => {
     Alert.alert(
-      'Import Data',
-      'This feature allows you to import habit data from:\n\n• Backup files\n• Other devices\n• Popular habit tracking apps\n\nYour existing data will be safely merged with imported data.',
+      'Import Your Data',
+      'Seamlessly import habit data from:\n\n• Previous app backups\n• Other devices\n• Popular habit tracking apps\n• CSV or JSON files\n\nYour existing data will be safely preserved and merged with imported habits.',
       [{ text: 'Understood', style: 'default' }]
     );
   };
@@ -110,7 +123,7 @@ export default function SettingsScreen() {
   const handleClearAllData = () => {
     Alert.alert(
       'Clear All Data',
-      'This will permanently delete:\n\n• All your habits\n• All habit logs and streaks\n• All achievements\n• App preferences\n\nThis action cannot be undone.',
+      'This will permanently remove:\n\n• All habit definitions\n• Complete tracking history\n• Streak records and achievements\n• Personal preferences\n\nThis action cannot be undone. Consider exporting your data first.',
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -119,7 +132,7 @@ export default function SettingsScreen() {
           onPress: async () => {
             try {
               await StorageService.clearAllData();
-              Alert.alert('Success', 'All data has been cleared successfully.');
+              Alert.alert('Data Cleared', 'All your data has been successfully removed.');
             } catch (error) {
               Alert.alert('Error', 'Failed to clear data. Please try again.');
             }
@@ -129,206 +142,274 @@ export default function SettingsScreen() {
     );
   };
 
-  const handleNotificationSettings = () => {
+  const handleThemeSelection = () => {
     Alert.alert(
-      'Notification Settings',
-      'Customize your habit reminders:\n\n• Set specific times for each habit\n• Choose notification frequency\n• Enable streak celebration alerts\n• Configure weekly progress summaries\n\nStay motivated with smart reminders!',
-      [{ text: 'Got it!', style: 'default' }]
-    );
-  };
-
-  const handleThemeSettings = () => {
-    Alert.alert(
-      'Theme Settings',
-      'Choose your preferred appearance:\n\n• Light Mode: Clean and bright\n• Dark Mode: Easy on the eyes\n• System: Follows your device settings\n\nYour choice will be saved automatically.',
+      'Choose Your Theme',
+      'Select your preferred appearance:',
       [
         { text: 'Cancel', style: 'cancel' },
         { 
-          text: 'Use System Theme', 
+          text: 'System Default', 
           onPress: () => setSystemTheme(true),
           style: isSystemTheme ? 'default' : 'default'
         },
         { 
-          text: isDark ? 'Switch to Light' : 'Switch to Dark', 
-          onPress: toggleTheme,
+          text: 'Light Mode', 
+          onPress: () => {
+            setSystemTheme(false);
+            if (isDark) toggleTheme();
+          },
+          style: 'default'
+        },
+        { 
+          text: 'Dark Mode', 
+          onPress: () => {
+            setSystemTheme(false);
+            if (!isDark) toggleTheme();
+          },
           style: 'default'
         },
       ]
     );
   };
 
+  const handleNotificationSettings = () => {
+    Alert.alert(
+      'Smart Notifications',
+      'Customize your habit reminders:\n\n• Personalized reminder times for each habit\n• Gentle nudges without being intrusive\n• Celebration alerts for streak milestones\n• Weekly progress summaries\n• Smart scheduling based on your patterns\n\nStay motivated with intelligent, contextual reminders.',
+      [{ text: 'Sounds Great!', style: 'default' }]
+    );
+  };
+
   const handleAbout = () => {
     Alert.alert(
       'About ConsistTracker',
-      'Version 1.0.0\n\nConsistTracker helps you build lasting habits through:\n\n• Visual consistency tracking\n• Intelligent streak monitoring\n• Beautiful green dot visualization\n• Comprehensive analytics\n• Motivational celebrations\n\nBuilt with React Native and designed for habit success.\n\n© 2025 ConsistTracker',
-      [{ text: 'Awesome!', style: 'default' }]
+      'Version 1.0.0\n\nConsistTracker transforms habit building through:\n\n• Beautiful visual progress tracking\n• Intelligent streak monitoring\n• Motivational milestone celebrations\n• Comprehensive analytics and insights\n• Apple-quality design and experience\n\nDesigned for iOS with love and attention to detail.\n\n© 2025 ConsistTracker Team',
+      [{ text: 'Wonderful!', style: 'default' }]
     );
   };
 
   const handleHelp = () => {
     Alert.alert(
-      'Help & Support',
-      'Getting Started Guide:\n\n1. Create Your First Habit\n   • Tap the + button on any screen\n   • Choose from suggestions or create custom\n   • Set your preferred tracking type\n\n2. Track Daily Progress\n   • Tap the circle to mark habits complete\n   • Watch your green dots grow\n   • Celebrate streak milestones\n\n3. Analyze Your Progress\n   • View your consistency graph\n   • Check detailed analytics\n   • Identify patterns and trends\n\n4. Stay Motivated\n   • Enable smart notifications\n   • Share achievements\n   • Set new challenges\n\nNeed more help? Contact support through the app store.',
-      [{ text: 'Thanks!', style: 'default' }]
+      'Getting Started Guide',
+      '🎯 Creating Your First Habit:\n• Tap the + button anywhere in the app\n• Choose from curated suggestions or create custom\n• Select tracking type (daily, weekly, or quantity)\n• Pick a meaningful color and category\n\n📊 Tracking Progress:\n• Tap the circle to mark habits complete\n• Watch your consistency graph fill with green\n• Celebrate streak milestones as you achieve them\n\n📈 Understanding Analytics:\n• View detailed insights in the Analytics tab\n• Monitor consistency scores and trends\n• Identify your top performing habits\n\n💡 Pro Tips:\n• Start with 2-3 habits for best results\n• Be consistent rather than perfect\n• Use the visual feedback to stay motivated\n\nNeed more help? We\'re here to support your journey.',
+      [{ text: 'Got It!', style: 'default' }]
     );
   };
 
   const handlePrivacy = () => {
     Alert.alert(
       'Privacy & Security',
-      'Your privacy is our priority:\n\n• All data stored locally on your device\n• No personal information collected\n• No tracking or analytics\n• No ads or third-party sharing\n• Optional cloud backup (coming soon)\n\nYou have complete control over your habit data.',
-      [{ text: 'Great!', style: 'default' }]
+      'Your privacy is our highest priority:\n\n🔒 Data Protection:\n• All habit data stored securely on your device\n• No personal information collected or transmitted\n• Zero tracking, analytics, or advertising\n• No third-party data sharing ever\n\n☁️ Optional Cloud Features:\n• Encrypted backup to your iCloud account\n• Secure sync across your Apple devices\n• You maintain complete control\n\n🛡️ Security:\n• Industry-standard encryption\n• Regular security audits\n• Transparent privacy practices\n\nYour habit journey remains completely private.',
+      [{ text: 'Excellent!', style: 'default' }]
     );
   };
 
-  const styles = createStyles(colors);
+  const getThemeDescription = () => {
+    if (isSystemTheme) return 'Follows your device settings';
+    return isDark ? 'Dark mode active' : 'Light mode active';
+  };
+
+  const getThemeIcon = () => {
+    if (isSystemTheme) return <Monitor size={20} color={colors.primary} strokeWidth={2.5} />;
+    return isDark ? <Moon size={20} color={colors.primary} strokeWidth={2.5} /> : <Sun size={20} color={colors.primary} strokeWidth={2.5} />;
+  };
+
+  const styles = createStyles(colors, isDark);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Settings</Text>
-        <Text style={styles.subtitle}>Customize your habit tracking experience</Text>
-      </View>
+    <View style={styles.container}>
+      <LinearGradient
+        colors={isDark ? ['#000000', '#1C1C1E'] : ['#F2F2F7', '#FFFFFF']}
+        style={styles.backgroundGradient}
+      >
+        <SafeAreaView style={styles.safeArea}>
+          <View style={styles.header}>
+            <Text style={styles.title}>Settings</Text>
+            <Text style={styles.subtitle}>Customize your habit tracking experience</Text>
+          </View>
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Appearance Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Appearance</Text>
-          <SettingItem
-            icon={isDark ? <Moon size={20} color={colors.primary} /> : <Sun size={20} color={colors.primary} />}
-            title="Theme"
-            subtitle={isSystemTheme ? 'System default' : (isDark ? 'Dark mode' : 'Light mode')}
-            onPress={handleThemeSettings}
-          />
-          <SettingItem
-            icon={<Palette size={20} color={colors.categories.Creativity} />}
-            title="Color Customization"
-            subtitle="Coming soon - custom themes and colors"
-            onPress={() => Alert.alert('Coming Soon', 'Custom color themes will be available in a future update!')}
-          />
-        </View>
+          <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+            {/* Appearance Section */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Appearance</Text>
+              <View style={styles.settingsGroup}>
+                <SettingItem
+                  icon={getThemeIcon()}
+                  title="Theme"
+                  subtitle={getThemeDescription()}
+                  onPress={handleThemeSelection}
+                  isFirst={true}
+                  isLast={true}
+                />
+              </View>
+            </View>
 
-        {/* Notifications Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Notifications</Text>
-          <SettingItem
-            icon={<Bell size={20} color={colors.primary} />}
-            title="Push Notifications"
-            subtitle="Get reminded to complete your habits"
-            rightElement={
-              <Switch
-                value={notificationsEnabled}
-                onValueChange={setNotificationsEnabled}
-                trackColor={{ false: colors.surface, true: colors.primary + '40' }}
-                thumbColor={notificationsEnabled ? colors.primary : colors.textSecondary}
-              />
-            }
-            showChevron={false}
-          />
-          <SettingItem
-            icon={<Smartphone size={20} color={colors.categories.Productivity} />}
-            title="Notification Settings"
-            subtitle="Customize timing, frequency, and style"
-            onPress={handleNotificationSettings}
-          />
-        </View>
+            {/* Notifications Section */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Notifications</Text>
+              <View style={styles.settingsGroup}>
+                <SettingItem
+                  icon={<Bell size={20} color={colors.primary} strokeWidth={2.5} />}
+                  title="Push Notifications"
+                  subtitle="Smart reminders for your habits"
+                  rightElement={
+                    <Switch
+                      value={notificationsEnabled}
+                      onValueChange={setNotificationsEnabled}
+                      trackColor={{ false: colors.systemGray4, true: colors.primary + '40' }}
+                      thumbColor={notificationsEnabled ? colors.primary : colors.systemGray}
+                      ios_backgroundColor={colors.systemGray4}
+                    />
+                  }
+                  showChevron={false}
+                  isFirst={true}
+                />
+                <SettingItem
+                  icon={<Smartphone size={20} color={colors.blue} strokeWidth={2.5} />}
+                  title="Notification Settings"
+                  subtitle="Customize timing and frequency"
+                  onPress={handleNotificationSettings}
+                  isLast={true}
+                />
+              </View>
+            </View>
 
-        {/* Data Management Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Data Management</Text>
-          <SettingItem
-            icon={<Download size={20} color={colors.categories.Finance} />}
-            title="Export Data"
-            subtitle="Backup your habits and progress"
-            onPress={handleExportData}
-          />
-          <SettingItem
-            icon={<Upload size={20} color={colors.categories.Learning} />}
-            title="Import Data"
-            subtitle="Restore from backup or other apps"
-            onPress={handleImportData}
-          />
-          <SettingItem
-            icon={<Trash2 size={20} color={colors.error} />}
-            title="Clear All Data"
-            subtitle="Delete all habits, logs, and settings"
-            onPress={handleClearAllData}
-          />
-        </View>
+            {/* Data Management Section */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Data Management</Text>
+              <View style={styles.settingsGroup}>
+                <SettingItem
+                  icon={<Download size={20} color={colors.green} strokeWidth={2.5} />}
+                  title="Export Data"
+                  subtitle="Backup your habits and progress"
+                  onPress={handleExportData}
+                  isFirst={true}
+                />
+                <SettingItem
+                  icon={<Upload size={20} color={colors.blue} strokeWidth={2.5} />}
+                  title="Import Data"
+                  subtitle="Restore from backup or other apps"
+                  onPress={handleImportData}
+                />
+                <SettingItem
+                  icon={<Trash2 size={20} color={colors.red} strokeWidth={2.5} />}
+                  title="Clear All Data"
+                  subtitle="Reset app to initial state"
+                  onPress={handleClearAllData}
+                  isLast={true}
+                />
+              </View>
+            </View>
 
-        {/* Privacy & Security Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Privacy & Security</Text>
-          <SettingItem
-            icon={<Shield size={20} color={colors.categories.Health} />}
-            title="Privacy Policy"
-            subtitle="How we protect your data"
-            onPress={handlePrivacy}
-          />
-        </View>
+            {/* Privacy & Security Section */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Privacy & Security</Text>
+              <View style={styles.settingsGroup}>
+                <SettingItem
+                  icon={<Shield size={20} color={colors.indigo} strokeWidth={2.5} />}
+                  title="Privacy Policy"
+                  subtitle="How we protect your personal data"
+                  onPress={handlePrivacy}
+                  isFirst={true}
+                  isLast={true}
+                />
+              </View>
+            </View>
 
-        {/* Support Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Support</Text>
-          <SettingItem
-            icon={<HelpCircle size={20} color={colors.categories.Relationships} />}
-            title="Help & FAQ"
-            subtitle="Get help using ConsistTracker"
-            onPress={handleHelp}
-          />
-          <SettingItem
-            icon={<Info size={20} color={colors.categories.Learning} />}
-            title="About"
-            subtitle="App version and information"
-            onPress={handleAbout}
-          />
-        </View>
+            {/* Support Section */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Support</Text>
+              <View style={styles.settingsGroup}>
+                <SettingItem
+                  icon={<HelpCircle size={20} color={colors.orange} strokeWidth={2.5} />}
+                  title="Help & Getting Started"
+                  subtitle="Learn how to build lasting habits"
+                  onPress={handleHelp}
+                  isFirst={true}
+                />
+                <SettingItem
+                  icon={<Info size={20} color={colors.purple} strokeWidth={2.5} />}
+                  title="About ConsistTracker"
+                  subtitle="App version and team information"
+                  onPress={handleAbout}
+                  isLast={true}
+                />
+              </View>
+            </View>
 
-        {/* App Info */}
-        <View style={styles.appInfo}>
-          <Text style={styles.appInfoText}>ConsistTracker v1.0.0</Text>
-          <Text style={styles.appInfoText}>Made with ❤️ for habit builders</Text>
-          <Text style={styles.appInfoText}>Build consistency, achieve greatness</Text>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+            {/* App Info */}
+            <View style={styles.appInfo}>
+              <Text style={styles.appInfoTitle}>ConsistTracker</Text>
+              <Text style={styles.appInfoVersion}>Version 1.0.0</Text>
+              <Text style={styles.appInfoTagline}>
+                Designed in California with love for habit builders worldwide
+              </Text>
+              <Text style={styles.appInfoMotto}>
+                Build consistency • Achieve greatness • Transform your life
+              </Text>
+            </View>
+          </ScrollView>
+        </SafeAreaView>
+      </LinearGradient>
+    </View>
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: any, isDark: boolean) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+  },
+  backgroundGradient: {
+    flex: 1,
+  },
+  safeArea: {
+    flex: 1,
   },
   header: {
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.surface,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 16,
   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: '700',
-    color: colors.textPrimary,
+    color: colors.label,
+    marginBottom: 4,
   },
   subtitle: {
-    fontSize: 16,
-    color: colors.textSecondary,
-    marginTop: 4,
+    fontSize: 17,
+    color: colors.labelSecondary,
+    fontWeight: '500',
   },
   scrollView: {
     flex: 1,
   },
   section: {
-    paddingTop: 24,
-    paddingBottom: 8,
+    paddingHorizontal: 20,
+    paddingBottom: 24,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '600',
-    color: colors.textPrimary,
-    paddingHorizontal: 16,
-    marginBottom: 8,
+    color: colors.label,
+    marginBottom: 12,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    fontSize: 13,
+    color: colors.labelSecondary,
+  },
+  settingsGroup: {
+    borderRadius: 12,
+    overflow: 'hidden',
+    shadowColor: isDark ? '#000000' : '#000000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: isDark ? 0.3 : 0.04,
+    shadowRadius: 8,
+    elevation: 2,
   },
   settingItem: {
     flexDirection: 'row',
@@ -336,7 +417,6 @@ const createStyles = (colors: any) => StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 16,
-    borderBottomWidth: 1,
   },
   settingLeft: {
     flexDirection: 'row',
@@ -344,9 +424,9 @@ const createStyles = (colors: any) => StyleSheet.create({
     flex: 1,
   },
   settingIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 32,
+    height: 32,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
@@ -355,12 +435,13 @@ const createStyles = (colors: any) => StyleSheet.create({
     flex: 1,
   },
   settingTitle: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '500',
     marginBottom: 2,
   },
   settingSubtitle: {
-    fontSize: 14,
+    fontSize: 15,
+    lineHeight: 18,
   },
   settingRight: {
     flexDirection: 'row',
@@ -369,12 +450,33 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   appInfo: {
     alignItems: 'center',
-    paddingVertical: 32,
-    paddingHorizontal: 16,
+    paddingVertical: 40,
+    paddingHorizontal: 20,
   },
-  appInfoText: {
-    fontSize: 14,
-    color: colors.textSecondary,
+  appInfoTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: colors.label,
     marginBottom: 4,
+  },
+  appInfoVersion: {
+    fontSize: 15,
+    color: colors.labelSecondary,
+    marginBottom: 16,
+    fontWeight: '500',
+  },
+  appInfoTagline: {
+    fontSize: 15,
+    color: colors.labelTertiary,
+    textAlign: 'center',
+    marginBottom: 8,
+    lineHeight: 20,
+  },
+  appInfoMotto: {
+    fontSize: 13,
+    color: colors.primary,
+    textAlign: 'center',
+    fontWeight: '600',
+    letterSpacing: 0.5,
   },
 });

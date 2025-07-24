@@ -9,7 +9,9 @@ import {
   RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Plus, Calendar, TrendingUp, Award, Sun, Moon } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
+import { Plus, Calendar, TrendingUp, Award, Sparkles } from 'lucide-react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
 import { HabitCard } from '../../components/HabitCard';
@@ -120,7 +122,7 @@ export default function TodayScreen() {
           Alert.alert(
             '🎉 Streak Milestone!',
             HabitUtils.getStreakMessage(newStreak.currentStreak),
-            [{ text: 'Awesome!', style: 'default' }]
+            [{ text: 'Amazing!', style: 'default' }]
           );
         }
       }
@@ -154,8 +156,8 @@ export default function TodayScreen() {
 
     Alert.alert(
       formattedDate,
-      `${dayData.habitsCompleted} of ${dayData.totalHabits} habits completed (${dayData.completionPercentage}%)`,
-      [{ text: 'OK', style: 'default' }]
+      `${dayData.habitsCompleted} of ${dayData.totalHabits} habits completed\n${dayData.completionPercentage}% completion rate`,
+      [{ text: 'Got it', style: 'default' }]
     );
   };
 
@@ -169,144 +171,180 @@ export default function TodayScreen() {
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning! ☀️';
-    if (hour < 17) return 'Good afternoon! 🌤️';
-    return 'Good evening! 🌙';
+    if (hour < 12) return 'Good Morning';
+    if (hour < 17) return 'Good Afternoon';
+    return 'Good Evening';
   };
 
   const getMotivationalMessage = () => {
     if (todayStats.percentage === 100) {
-      return "Perfect day! You've completed all your habits! 🎉";
+      return "Perfect day! You've mastered your habits today.";
     } else if (todayStats.percentage >= 75) {
-      return "You're doing great! Keep up the momentum! 💪";
+      return "Excellent progress! You're building incredible momentum.";
     } else if (todayStats.percentage >= 50) {
-      return "Good progress! You're halfway there! 🎯";
+      return "Great work! You're more than halfway to your daily goals.";
     } else if (todayStats.percentage > 0) {
-      return "Nice start! Every step counts! 🌱";
+      return "Nice start! Every habit completed is a step forward.";
     } else {
-      return "Ready to build some great habits today? 🚀";
+      return "Ready to make today amazing? Your habits are waiting.";
     }
   };
 
-  const styles = createStyles(colors);
+  const styles = createStyles(colors, isDark);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView
-        style={styles.scrollView}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        showsVerticalScrollIndicator={false}
+    <View style={styles.container}>
+      <LinearGradient
+        colors={isDark ? ['#000000', '#1C1C1E'] : ['#F2F2F7', '#FFFFFF']}
+        style={styles.backgroundGradient}
       >
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.greeting}>{getGreeting()}</Text>
-            <Text style={styles.date}>
-              {new Date().toLocaleDateString('en-US', {
-                weekday: 'long',
-                month: 'long',
-                day: 'numeric',
-              })}
-            </Text>
-            <Text style={styles.motivationalMessage}>
-              {getMotivationalMessage()}
-            </Text>
-          </View>
-          
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => setShowCreateModal(true)}
+        <SafeAreaView style={styles.safeArea}>
+          <ScrollView
+            style={styles.scrollView}
+            refreshControl={
+              <RefreshControl 
+                refreshing={refreshing} 
+                onRefresh={onRefresh}
+                tintColor={colors.primary}
+              />
+            }
+            showsVerticalScrollIndicator={false}
           >
-            <Plus size={24} color={colors.textLight} />
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.statsContainer}>
-          <StatsCard
-            title="Today's Progress"
-            value={`${todayStats.completed}/${todayStats.total}`}
-            subtitle={`${todayStats.percentage}% complete`}
-            color={colors.primary}
-            icon={<Calendar size={20} color={colors.primary} />}
-          />
-          
-          <StatsCard
-            title="Active Streaks"
-            value={getTotalCurrentStreak()}
-            subtitle="Total streak days"
-            color={colors.accent}
-            icon={<TrendingUp size={20} color={colors.accent} />}
-          />
-          
-          <StatsCard
-            title="Best Streak"
-            value={getBestStreak()}
-            subtitle="Personal record"
-            color={colors.secondary}
-            icon={<Award size={20} color={colors.secondary} />}
-          />
-        </View>
-
-        <ContributionGraph
-          data={calendarData}
-          onDayPress={handleDayPress}
-        />
-
-        <View style={styles.habitsSection}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Today's Habits</Text>
-            <Text style={styles.sectionSubtitle}>
-              {habits.length === 0 
-                ? "No habits yet - create your first one!" 
-                : `${todayStats.completed} of ${todayStats.total} completed`
-              }
-            </Text>
-          </View>
-          
-          {habits.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyStateTitle}>Start Your Journey</Text>
-              <Text style={styles.emptyStateText}>
-                Building consistent habits is the key to achieving your goals. 
-                Create your first habit and start tracking your progress with our 
-                beautiful visual system.
-              </Text>
+            <View style={styles.header}>
+              <View style={styles.headerContent}>
+                <Text style={styles.greeting}>{getGreeting()}</Text>
+                <Text style={styles.date}>
+                  {new Date().toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </Text>
+                <Text style={styles.motivationalMessage}>
+                  {getMotivationalMessage()}
+                </Text>
+              </View>
+              
               <TouchableOpacity
-                style={styles.createFirstHabitButton}
+                style={styles.addButton}
                 onPress={() => setShowCreateModal(true)}
               >
-                <Plus size={20} color={colors.textLight} />
-                <Text style={styles.createFirstHabitText}>Create Your First Habit</Text>
+                <LinearGradient
+                  colors={[colors.primary, colors.primaryDark]}
+                  style={styles.addButtonGradient}
+                >
+                  <Plus size={24} color="#FFFFFF" strokeWidth={2.5} />
+                </LinearGradient>
               </TouchableOpacity>
             </View>
-          ) : (
-            habits.map(habit => (
-              <HabitCard
-                key={habit.id}
-                habit={habit}
-                logs={logs}
-                streak={streaks[habit.id] || { habitId: habit.id, currentStreak: 0, longestStreak: 0 }}
-                onToggleComplete={handleToggleHabit}
+
+            <View style={styles.statsContainer}>
+              <StatsCard
+                title="Today's Progress"
+                value={`${todayStats.completed}/${todayStats.total}`}
+                subtitle={`${todayStats.percentage}% complete`}
+                color={colors.primary}
+                icon={<Calendar size={20} color={colors.primary} />}
               />
-            ))
-          )}
-        </View>
-      </ScrollView>
+              
+              <StatsCard
+                title="Active Streaks"
+                value={getTotalCurrentStreak()}
+                subtitle="Total streak days"
+                color={colors.orange}
+                icon={<TrendingUp size={20} color={colors.orange} />}
+              />
+              
+              <StatsCard
+                title="Best Streak"
+                value={getBestStreak()}
+                subtitle="Personal record"
+                color={colors.success}
+                icon={<Award size={20} color={colors.success} />}
+              />
+            </View>
+
+            <ContributionGraph
+              data={calendarData}
+              onDayPress={handleDayPress}
+            />
+
+            <View style={styles.habitsSection}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Today's Habits</Text>
+                <Text style={styles.sectionSubtitle}>
+                  {habits.length === 0 
+                    ? "Create your first habit to begin your journey" 
+                    : `${todayStats.completed} of ${todayStats.total} completed today`
+                  }
+                </Text>
+              </View>
+              
+              {habits.length === 0 ? (
+                <View style={styles.emptyStateContainer}>
+                  <LinearGradient
+                    colors={isDark ? ['#1C1C1E', '#2C2C2E'] : ['#FFFFFF', '#F8F9FA']}
+                    style={styles.emptyStateGradient}
+                  >
+                    <View style={styles.emptyState}>
+                      <View style={styles.emptyStateIcon}>
+                        <Sparkles size={32} color={colors.primary} />
+                      </View>
+                      <Text style={styles.emptyStateTitle}>Start Your Journey</Text>
+                      <Text style={styles.emptyStateText}>
+                        Building consistent habits is the foundation of personal growth. 
+                        Create your first habit and watch as small daily actions 
+                        transform into lasting positive changes.
+                      </Text>
+                      <TouchableOpacity
+                        style={styles.createFirstHabitButton}
+                        onPress={() => setShowCreateModal(true)}
+                      >
+                        <LinearGradient
+                          colors={[colors.primary, colors.primaryDark]}
+                          style={styles.createButtonGradient}
+                        >
+                          <Plus size={20} color="#FFFFFF" strokeWidth={2.5} />
+                          <Text style={styles.createFirstHabitText}>Create Your First Habit</Text>
+                        </LinearGradient>
+                      </TouchableOpacity>
+                    </View>
+                  </LinearGradient>
+                </View>
+              ) : (
+                habits.map(habit => (
+                  <HabitCard
+                    key={habit.id}
+                    habit={habit}
+                    logs={logs}
+                    streak={streaks[habit.id] || { habitId: habit.id, currentStreak: 0, longestStreak: 0 }}
+                    onToggleComplete={handleToggleHabit}
+                  />
+                ))
+              )}
+            </View>
+          </ScrollView>
+        </SafeAreaView>
+      </LinearGradient>
 
       <CreateHabitModal
         visible={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         onSave={handleCreateHabit}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: any, isDark: boolean) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+  },
+  backgroundGradient: {
+    flex: 1,
+  },
+  safeArea: {
+    flex: 1,
   },
   scrollView: {
     flex: 1,
@@ -315,95 +353,140 @@ const createStyles = (colors: any) => StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 16,
+  },
+  headerContent: {
+    flex: 1,
+    marginRight: 16,
   },
   greeting: {
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: '700',
-    color: colors.textPrimary,
+    color: colors.label,
+    marginBottom: 4,
   },
   date: {
-    fontSize: 16,
-    color: colors.textSecondary,
-    marginTop: 4,
+    fontSize: 17,
+    color: colors.labelSecondary,
+    marginBottom: 12,
+    fontWeight: '500',
   },
   motivationalMessage: {
-    fontSize: 14,
+    fontSize: 15,
     color: colors.primary,
-    marginTop: 8,
+    lineHeight: 20,
     fontWeight: '500',
-    maxWidth: 250,
   },
   addButton: {
-    backgroundColor: colors.primary,
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
+    borderRadius: 24,
+    shadowColor: colors.primary,
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 4,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  addButtonGradient: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   statsContainer: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     gap: 12,
     marginBottom: 8,
   },
   habitsSection: {
-    paddingBottom: 32,
+    paddingBottom: 40,
   },
   sectionHeader: {
-    paddingHorizontal: 16,
-    marginBottom: 16,
+    paddingHorizontal: 20,
+    marginBottom: 20,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: colors.textPrimary,
+    fontSize: 24,
+    fontWeight: '700',
+    color: colors.label,
+    marginBottom: 4,
   },
   sectionSubtitle: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    marginTop: 4,
+    fontSize: 15,
+    color: colors.labelSecondary,
+    fontWeight: '500',
+  },
+  emptyStateContainer: {
+    marginHorizontal: 20,
+    borderRadius: 20,
+    shadowColor: isDark ? '#000000' : '#000000',
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+    shadowOpacity: isDark ? 0.3 : 0.08,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  emptyStateGradient: {
+    borderRadius: 20,
+    overflow: 'hidden',
   },
   emptyState: {
     alignItems: 'center',
-    paddingHorizontal: 32,
-    paddingVertical: 48,
+    padding: 40,
+  },
+  emptyStateIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: colors.primary + '15',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
   },
   emptyStateTitle: {
     fontSize: 24,
-    fontWeight: '600',
-    color: colors.textPrimary,
-    marginBottom: 12,
+    fontWeight: '700',
+    color: colors.label,
+    marginBottom: 16,
+    textAlign: 'center',
   },
   emptyStateText: {
     fontSize: 16,
-    color: colors.textSecondary,
+    color: colors.labelSecondary,
     textAlign: 'center',
     marginBottom: 32,
     lineHeight: 24,
+    maxWidth: 280,
   },
   createFirstHabitButton: {
+    borderRadius: 25,
+    shadowColor: colors.primary,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  createButtonGradient: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.primary,
     paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 24,
+    paddingVertical: 16,
+    borderRadius: 25,
     gap: 8,
   },
   createFirstHabitText: {
-    color: colors.textLight,
-    fontSize: 16,
+    color: '#FFFFFF',
+    fontSize: 17,
     fontWeight: '600',
   },
 });

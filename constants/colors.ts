@@ -1,98 +1,144 @@
 export const LightColors = {
-  // Primary green palette for dot visualization
-  dotColors: {
-    empty: '#f0f0f0',
-    level1: '#c6e48b', // 1-25%
-    level2: '#7bc96f', // 26-50%
-    level3: '#239a3b', // 51-75%
-    level4: '#196127', // 76-100%
-  },
+  // Apple-inspired primary colors
+  primary: '#007AFF',
+  primaryLight: '#5AC8FA',
+  primaryDark: '#0051D5',
   
-  // Main app colors
-  primary: '#196127',
-  secondary: '#7bc96f',
-  accent: '#ffd700',
+  // Sophisticated greens for habit tracking
+  success: '#34C759',
+  successLight: '#30D158',
+  successDark: '#248A3D',
   
-  // Background colors
-  background: '#ffffff',
-  surface: '#f8f9fa',
-  card: '#ffffff',
+  // Premium backgrounds
+  background: '#F2F2F7',
+  backgroundSecondary: '#FFFFFF',
+  surface: '#FFFFFF',
+  surfaceSecondary: '#F2F2F7',
   
-  // Text colors
-  textPrimary: '#212529',
-  textSecondary: '#6c757d',
-  textLight: '#ffffff',
+  // Apple's refined grays
+  systemGray: '#8E8E93',
+  systemGray2: '#AEAEB2',
+  systemGray3: '#C7C7CC',
+  systemGray4: '#D1D1D6',
+  systemGray5: '#E5E5EA',
+  systemGray6: '#F2F2F7',
   
-  // Status colors
-  success: '#28a745',
-  warning: '#ffc107',
-  error: '#dc3545',
-  info: '#17a2b8',
+  // Text hierarchy
+  label: '#000000',
+  labelSecondary: '#3C3C43',
+  labelTertiary: '#3C3C4399',
+  labelQuaternary: '#3C3C432E',
   
-  // Habit category colors
+  // Semantic colors
+  red: '#FF3B30',
+  orange: '#FF9500',
+  yellow: '#FFCC00',
+  green: '#34C759',
+  mint: '#00C7BE',
+  teal: '#30B0C7',
+  cyan: '#32D2FF',
+  blue: '#007AFF',
+  indigo: '#5856D6',
+  purple: '#AF52DE',
+  pink: '#FF2D92',
+  brown: '#A2845E',
+  
+  // Habit category colors (Apple-inspired)
   categories: {
-    Health: '#e74c3c',
-    Productivity: '#3498db',
-    Learning: '#9b59b6',
-    Relationships: '#e91e63',
-    Finance: '#2ecc71',
-    Creativity: '#f39c12',
+    Health: '#FF3B30',
+    Productivity: '#007AFF',
+    Learning: '#5856D6',
+    Relationships: '#FF2D92',
+    Finance: '#34C759',
+    Creativity: '#FF9500',
   },
   
-  // Additional colors for customization
+  // Dot visualization colors
+  dotColors: {
+    empty: '#E5E5EA',
+    level1: '#C6F7D0',
+    level2: '#7DD87A',
+    level3: '#39D353',
+    level4: '#26A641',
+  },
+  
+  // Premium habit colors
   habitColors: [
-    '#196127', '#e74c3c', '#3498db', '#9b59b6',
-    '#e91e63', '#2ecc71', '#f39c12', '#34495e',
-    '#16a085', '#8e44ad', '#2980b9', '#27ae60'
+    '#007AFF', '#FF3B30', '#34C759', '#FF9500',
+    '#5856D6', '#AF52DE', '#FF2D92', '#00C7BE',
+    '#30B0C7', '#32D2FF', '#A2845E', '#8E8E93'
   ]
 };
 
 export const DarkColors = {
-  // Primary green palette for dot visualization (adjusted for dark mode)
-  dotColors: {
-    empty: '#2d3748',
-    level1: '#68d391', // 1-25%
-    level2: '#48bb78', // 26-50%
-    level3: '#38a169', // 51-75%
-    level4: '#2f855a', // 76-100%
-  },
+  // Apple dark mode colors
+  primary: '#0A84FF',
+  primaryLight: '#64D2FF',
+  primaryDark: '#0040DD',
   
-  // Main app colors
-  primary: '#48bb78',
-  secondary: '#68d391',
-  accent: '#ffd700',
+  // Dark mode greens
+  success: '#30D158',
+  successLight: '#32D74B',
+  successDark: '#248A3D',
   
-  // Background colors
-  background: '#1a202c',
-  surface: '#2d3748',
-  card: '#2d3748',
+  // Dark backgrounds
+  background: '#000000',
+  backgroundSecondary: '#1C1C1E',
+  surface: '#1C1C1E',
+  surfaceSecondary: '#2C2C2E',
   
-  // Text colors
-  textPrimary: '#f7fafc',
-  textSecondary: '#a0aec0',
-  textLight: '#ffffff',
+  // Dark mode grays
+  systemGray: '#8E8E93',
+  systemGray2: '#636366',
+  systemGray3: '#48484A',
+  systemGray4: '#3A3A3C',
+  systemGray5: '#2C2C2E',
+  systemGray6: '#1C1C1E',
   
-  // Status colors
-  success: '#48bb78',
-  warning: '#ed8936',
-  error: '#f56565',
-  info: '#4299e1',
+  // Dark text hierarchy
+  label: '#FFFFFF',
+  labelSecondary: '#EBEBF5',
+  labelTertiary: '#EBEBF599',
+  labelQuaternary: '#EBEBF52E',
   
-  // Habit category colors (adjusted for dark mode)
+  // Dark semantic colors
+  red: '#FF453A',
+  orange: '#FF9F0A',
+  yellow: '#FFD60A',
+  green: '#30D158',
+  mint: '#63E6E2',
+  teal: '#40CBE0',
+  cyan: '#64D2FF',
+  blue: '#0A84FF',
+  indigo: '#5E5CE6',
+  purple: '#BF5AF2',
+  pink: '#FF375F',
+  brown: '#AC8E68',
+  
+  // Dark habit category colors
   categories: {
-    Health: '#fc8181',
-    Productivity: '#63b3ed',
-    Learning: '#b794f6',
-    Relationships: '#f687b3',
-    Finance: '#68d391',
-    Creativity: '#f6ad55',
+    Health: '#FF453A',
+    Productivity: '#0A84FF',
+    Learning: '#5E5CE6',
+    Relationships: '#FF375F',
+    Finance: '#30D158',
+    Creativity: '#FF9F0A',
   },
   
-  // Additional colors for customization
+  // Dark dot colors
+  dotColors: {
+    empty: '#2C2C2E',
+    level1: '#0D4F1C',
+    level2: '#26A641',
+    level3: '#39D353',
+    level4: '#7DD87A',
+  },
+  
+  // Dark habit colors
   habitColors: [
-    '#48bb78', '#fc8181', '#63b3ed', '#b794f6',
-    '#f687b3', '#68d391', '#f6ad55', '#718096',
-    '#4fd1c7', '#9f7aea', '#4299e1', '#38a169'
+    '#0A84FF', '#FF453A', '#30D158', '#FF9F0A',
+    '#5E5CE6', '#BF5AF2', '#FF375F', '#63E6E2',
+    '#40CBE0', '#64D2FF', '#AC8E68', '#8E8E93'
   ]
 };
 
@@ -105,5 +151,4 @@ export const getCompletionColor = (percentage: number, isDark: boolean = false):
   return colors.dotColors.level4;
 };
 
-// Dynamic color getter based on theme
 export const getColors = (isDark: boolean) => isDark ? DarkColors : LightColors;
