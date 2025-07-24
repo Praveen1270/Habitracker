@@ -47,6 +47,7 @@ const SettingItem: React.FC<SettingItemProps> = ({
 }) => {
   const { isDark } = useTheme();
   const colors = getColors(isDark);
+  const styles = createStyles(colors);
   
   return (
     <TouchableOpacity style={[styles.settingItem, { backgroundColor: colors.card, borderBottomColor: colors.surface }]} onPress={onPress}>
