@@ -1,17 +1,21 @@
 import { Tabs } from 'expo-router';
 import { Chrome as Home, ChartBar as BarChart3, Target, Settings } from 'lucide-react-native';
-import { Colors } from '../../constants/colors';
+import { getColors } from '../../constants/colors';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export default function TabLayout() {
+  const { isDark } = useTheme();
+  const colors = getColors(isDark);
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: Colors.primary,
-        tabBarInactiveTintColor: Colors.textSecondary,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textSecondary,
         tabBarStyle: {
-          backgroundColor: Colors.background,
-          borderTopColor: Colors.surface,
+          backgroundColor: colors.background,
+          borderTopColor: colors.surface,
           paddingTop: 8,
           paddingBottom: 8,
           height: 60,
